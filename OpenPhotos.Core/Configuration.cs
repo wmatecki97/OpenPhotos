@@ -9,6 +9,7 @@ namespace OpenPhotos.Core
         {
             var builder = new ConfigurationBuilder()
             .AddEnvironmentVariables();
+
             config = builder.Build();
         }
 
@@ -21,6 +22,21 @@ namespace OpenPhotos.Core
         public static string GetImaggaApiSecret()
         {
             return config["imaggaApiSecret"];
+        }
+
+        public static string GetFtpLogin()
+        {
+            return config["ftpLogin"];
+        }
+
+        public static string GetFtpPassword()
+        {
+            return config["ftpPassword"];
+        }
+
+        public static string GetOpenPhotosFolderPath()
+        {
+            return config["openPhotosFolderPath"] ?? "G/OpenPhotos";
         }
     }
 }

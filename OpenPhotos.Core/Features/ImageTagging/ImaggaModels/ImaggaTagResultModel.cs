@@ -1,4 +1,4 @@
-﻿namespace OpenPhotos.Core.ImaggaModels
+﻿namespace OpenPhotos.Core.Features.ImageTagging.ImaggaModels
 {
     internal class ImaggaTagResponseModel
     {
@@ -12,7 +12,7 @@
     internal class TagModelWithProbability
     {
         public double Confidence { get; set; }
-        public Dictionary<string, string> Tag{ get; set; }
+        public Dictionary<string, string> Tag { get; set; }
         public string TagValue => Tag.Values.First();
     }
 }
