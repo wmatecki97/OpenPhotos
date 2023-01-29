@@ -15,13 +15,4 @@
     <ProjectReference Include="..\OpenPhotos.Core\OpenPhotos.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="image1_tequila.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="test.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
