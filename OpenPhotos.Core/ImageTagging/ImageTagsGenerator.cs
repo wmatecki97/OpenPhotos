@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
-using OpenPhotos.Core.Features.ImageTagging.ImaggaModels;
+using OpenPhotos.Core.ImageTagging.ImaggaModels;
 using RestSharp;
 
-namespace OpenPhotos.Core.Features.ImageTagging
+namespace OpenPhotos.Core.ImageTagging
 {
     public class ImageTagsGenerator
     {

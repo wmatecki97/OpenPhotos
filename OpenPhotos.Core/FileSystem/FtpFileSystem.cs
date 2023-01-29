@@ -1,6 +1,6 @@
 ﻿using Limilabs.FTP.Client;
 
-namespace OpenPhotos.Core.Features.FTP
+namespace OpenPhotos.Core.FileSystem
 {
     public class FtpFileSystem
     {
@@ -8,7 +8,7 @@ namespace OpenPhotos.Core.Features.FTP
 
         public FtpFileSystem()
         {
-            ftpConnection= new Ftp();
+            ftpConnection = new Ftp();
             ftpConnection.Connect("192.168.0.1", 21);
             var login = Configuration.GetFtpLogin();
             var password = Configuration.GetFtpPassword();
@@ -27,7 +27,7 @@ namespace OpenPhotos.Core.Features.FTP
             return file;
         }
 
-        public void SaveFile(string fileName, byte[] fileContent) 
+        public void SaveFile(string fileName, byte[] fileContent)
         {
             var date = DateTime.Now;
             string name = $"{date.Year}-{date.Month}-{date.Day}-{fileName}";

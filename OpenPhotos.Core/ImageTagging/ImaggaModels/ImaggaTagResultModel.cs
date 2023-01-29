@@ -1,4 +1,4 @@
-﻿namespace OpenPhotos.Core.Features.ImageTagging.ImaggaModels
+﻿namespace OpenPhotos.Core.ImageTagging.ImaggaModels
 {
     internal class ImaggaTagResponseModel
     {
