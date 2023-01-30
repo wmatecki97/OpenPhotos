@@ -2,7 +2,7 @@
 
 namespace OpenPhotos.Core
 {
-    internal static class Configuration
+    public static class Configuration
     {
         private static IConfigurationRoot config;
         static Configuration()
