@@ -1,8 +1,9 @@
 ﻿using Limilabs.FTP.Client;
+using OpenPhotos.Core.Interfaces;
 
 namespace OpenPhotos.Core.FileSystem
 {
-    public class FtpFileSystem
+    public class FtpFileSystem : IFileSystem, IDisposable
     {
         private readonly Ftp ftpConnection;
 
@@ -14,6 +15,12 @@ namespace OpenPhotos.Core.FileSystem
             var password = Configuration.GetFtpPassword();
             ftpConnection.Login(login, password);
             ftpConnection.ChangeFolder("G/OpenPhotos");
+        }
+
+        public void Dispose()
+        {
+            ftpConnection.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         ~FtpFileSystem()
@@ -39,6 +46,6 @@ namespace OpenPhotos.Core.FileSystem
             var list = ftpConnection.List();
             var fileNames = list.Select(f => f.Name).ToList();
             return fileNames;
-        }
+        }        
     }
 }

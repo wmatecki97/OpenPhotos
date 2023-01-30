@@ -1,32 +1,49 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OpenPhotos.Core.Database.Entities;
+using OpenPhotos.Core.Interfaces.Repositories;
 
 namespace OpenPhotos.Core.Database.Repositories
 {
-    internal class PhotosRepository
+    public class PhotosRepository : IPhotosRepository
     {
-        private readonly IOpenPhotosDbContext dbContext;
+        private readonly IOpenPhotosDbContext context;
 
         public PhotosRepository(IOpenPhotosDbContext dbContext)
         {
-            this.dbContext = dbContext;
+            context = dbContext;
         }
 
-        public Task<List<PhotoMetadata>> GetAll()
+        public async Task Add(PhotoMetadata photo)
         {
-            return dbContext.Photos.ToListAsync();
+            await context.Photos.AddAsync(photo);
+            return;
         }
 
-        public Task<PhotoMetadata> GetByName(string name)
+        public async Task<List<PhotoMetadata>> GetAll()
         {
-            return dbContext.Photos.FirstOrDefaultAsync(p => p.Name == name);
+            return await context.Photos.ToListAsync();
         }
 
-        public Task<List<PhotoMetadata>> GetByTag(string tag)
+        public async Task<PhotoMetadata> GetByName(string name)
         {
-            return dbContext.Photos.Include(p => p.Tags)
+            return await context.Photos.FirstOrDefaultAsync(p => p.Name == name);
+        }
+
+        public async Task<List<PhotoMetadata>> GetByTag(string tag)
+        {
+            return await context.Photos.Include(p => p.Tags)
                 .Where(p => p.Tags.Any(t => t.Value.Contains(tag, StringComparison.OrdinalIgnoreCase)))
                 .ToListAsync();
+        }
+
+        public async Task<PhotoMetadata[]> GetTopLatestPhotos(int number)
+        {
+            return await context.Photos.OrderByDescending(p => p.DateTaken).Take(number).ToArrayAsync();
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await context.SaveChangesAsync();
         }
     }
 }

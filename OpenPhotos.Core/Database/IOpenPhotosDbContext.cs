@@ -3,8 +3,10 @@ using OpenPhotos.Core.Database.Entities;
 
 namespace OpenPhotos.Core.Database
 {
-    internal interface IOpenPhotosDbContext
+    public interface IOpenPhotosDbContext
     {
         DbSet<PhotoMetadata> Photos { get; set; }
+
+        Task SaveChangesAsync();
     }
 }

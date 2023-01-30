@@ -15,6 +15,8 @@ namespace OpenPhotos.Web
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddOpenPhotosCoreServices();
+            builder.Services.AddAutoMapper(typeof(MappingProfile));
+            builder.Services.AddWebServices();
 
             var app = builder.Build();
 

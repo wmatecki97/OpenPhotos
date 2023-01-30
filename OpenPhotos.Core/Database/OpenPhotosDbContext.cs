@@ -10,5 +10,10 @@ namespace OpenPhotos.Core.Database
         public OpenPhotosDbContext(DbContextOptions options) : base(options)
         {
         }
+
+        public async Task SaveChangesAsync()
+        {
+            await SaveChangesAsync();
+        }
     }
 }

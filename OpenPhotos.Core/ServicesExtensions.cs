@@ -1,6 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OpenPhotos.Core.Database;
 using Microsoft.EntityFrameworkCore;
+using OpenPhotos.Core.Interfaces.Repositories;
+using OpenPhotos.Core.Database.Repositories;
+using OpenPhotos.Core.Interfaces;
+using OpenPhotos.Core.FileProcessing;
+using OpenPhotos.Core.FileSystem;
 
 namespace OpenPhotos.Core
 {
@@ -10,8 +15,13 @@ namespace OpenPhotos.Core
         {
             services.AddDbContext< IOpenPhotosDbContext, OpenPhotosDbContext>(options =>
             {
-                options.UseNpgsql();
+                options.UseNpgsql("User ID=admin;Password=admin;Host=localhost;Port=5432;Database=OpenPhotos;");
             });
+
+            services.AddScoped<IPhotosRepository, PhotosRepository>();
+            services.AddScoped<IFileMetadataReader, FileMetadataReader>();
+            services.AddScoped<IFileSystem, FtpFileSystem>();
+
             return services;
         }
     }
