@@ -25,6 +25,12 @@ namespace OpenPhotos.Web.BusinessLogic
             this.fileSystem = fileSystem;
         }
 
+        public byte[] GetImageBytes(string imageName)
+        {
+            var image = fileSystem.GetFile(imageName);
+            return image;
+        }
+
         public async Task<PhotoMetadata[]> GetMostCurrentPhotosAsync(int number)
         {
             var photos = await photosRepository.GetTopLatestPhotos(number);

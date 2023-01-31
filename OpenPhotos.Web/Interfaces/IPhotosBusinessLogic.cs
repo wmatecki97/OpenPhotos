@@ -5,6 +5,7 @@ namespace OpenPhotos.Web.Interfaces
 {
     public interface IPhotosBusinessLogic
     {
+        byte[] GetImageBytes(string imageName);
         Task<PhotoMetadata[]> GetMostCurrentPhotosAsync(int number);
         Task UploadPhoto(PhotoUploadDto photoDto);
     }

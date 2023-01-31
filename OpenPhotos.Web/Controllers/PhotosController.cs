@@ -28,6 +28,14 @@ namespace OpenPhotos.Web.Controllers
             return Ok(dtos);
         }
 
+        [HttpGet("Image/{imageName}")]
+        public IActionResult GetImage(string imageName)
+        {
+            var imageBytes = photosLogic.GetImageBytes(imageName);
+            var extension = Path.GetExtension(imageName);
+            return File(imageBytes, $"image/{extension}");
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddPhoto(PhotoUploadDto photoDto)
         {
