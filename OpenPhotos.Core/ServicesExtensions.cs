@@ -13,6 +13,8 @@ namespace OpenPhotos.Core
     {
         public static IServiceCollection AddOpenPhotosCoreServices(this IServiceCollection services)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
             services.AddDbContext< IOpenPhotosDbContext, OpenPhotosDbContext>(options =>
             {
                 options.UseNpgsql("User ID=admin;Password=admin;Host=localhost;Port=5432;Database=OpenPhotos;");

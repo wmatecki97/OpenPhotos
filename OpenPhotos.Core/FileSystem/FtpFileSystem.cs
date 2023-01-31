@@ -10,11 +10,11 @@ namespace OpenPhotos.Core.FileSystem
         public FtpFileSystem()
         {
             ftpConnection = new Ftp();
-            ftpConnection.Connect("192.168.0.1", 21);
+            ftpConnection.Connect("ftpupload.net", 21);
             var login = Configuration.GetFtpLogin();
             var password = Configuration.GetFtpPassword();
             ftpConnection.Login(login, password);
-            ftpConnection.ChangeFolder("G/OpenPhotos");
+            ftpConnection.ChangeFolder("OpenPhotos");
         }
 
         public void Dispose()

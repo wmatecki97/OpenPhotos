@@ -7,6 +7,6 @@ namespace OpenPhotos.Core.Database
     {
         DbSet<PhotoMetadata> Photos { get; set; }
 
-        Task SaveChangesAsync();
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }
