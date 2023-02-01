@@ -6,6 +6,7 @@ using OpenPhotos.Core.Interfaces.Repositories;
 using OpenPhotos.Web.Dtos;
 using OpenPhotos.Web.Interfaces;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OpenPhotos.Web.BusinessLogic
 {
@@ -37,16 +38,15 @@ namespace OpenPhotos.Web.BusinessLogic
             return photos;
         }
 
-        public async Task UploadPhoto(PhotoUploadDto photoDto)
+        public async Task UploadPhoto(PhotoUploadDto upload)
         {
-            var photoMetadata = fileMetadataReader.GetFileMetadata(photoDto.Metadata);
-            photoMetadata.Name = photoDto.Name;
+            var photoMetadata = fileMetadataReader.GetFileMetadata(upload.Metadata);
+            photoMetadata.Name = $"{upload.CreatedDate.Year}-{upload.CreatedDate.Month}-{upload.CreatedDate.Day}-{upload.Name}";
+            
             //todo tags
             await photosRepository.Add(photoMetadata);
 
-            var fileBytes = Encoding.UTF8.GetBytes(photoDto.PhotoBase64);
-            var allfiles = fileSystem.GetAllFiles();
-            fileSystem.SaveFile(photoDto.Name, fileBytes);
+            fileSystem.SaveFile(photoMetadata.Name, upload.PhotoBytes);
 
             await photosRepository.SaveChangesAsync();
         }

@@ -36,9 +36,7 @@ namespace OpenPhotos.Core.FileSystem
 
         public void SaveFile(string fileName, byte[] fileContent)
         {
-            var date = DateTime.Now;
-            string name = $"{date.Year}-{date.Month}-{date.Day}-{fileName}";
-            ftpConnection.Append(name, fileContent);
+            ftpConnection.Append(fileName, fileContent);
         }
 
         public List<string> GetAllFiles()

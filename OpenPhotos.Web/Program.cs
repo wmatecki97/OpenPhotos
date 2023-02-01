@@ -17,6 +17,14 @@ namespace OpenPhotos.Web
             builder.Services.AddOpenPhotosCoreServices();
             builder.Services.AddAutoMapper(typeof(MappingProfile));
             builder.Services.AddWebServices();
+            builder.Services.AddCors(options => 
+                options.AddDefaultPolicy(policy => 
+                policy
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                )
+                );
 
             var app = builder.Build();
 

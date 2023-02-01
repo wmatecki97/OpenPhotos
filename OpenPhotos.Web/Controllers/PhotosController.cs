@@ -37,9 +37,20 @@ namespace OpenPhotos.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPhoto(PhotoUploadDto photoDto)
+        public async Task<IActionResult> AddPhoto([FromForm] IFormFile photo)
         {
-            await photosLogic.UploadPhoto(photoDto);
+            using (var memoryStream = new MemoryStream())
+            {
+                await photo.CopyToAsync(memoryStream);
+                var fileBytes = memoryStream.ToArray();
+
+                var uploadData = new PhotoUploadDto()
+                {
+                    Name = photo.FileName,
+                    PhotoBytes = fileBytes
+                };
+                await photosLogic.UploadPhoto(uploadData);
+            }
             return Ok();
         }
     }

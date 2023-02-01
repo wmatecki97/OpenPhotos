@@ -6,6 +6,7 @@ namespace OpenPhotos.Web.Dtos
     {
         public string Name { get; set; }
         public Dictionary<string, string> Metadata { get; set; }
-        public string PhotoBase64 { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public byte[] PhotoBytes { get; set; }
     }
 }
