@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using OpenPhotos.Contracts;
 
 namespace OpenPhotos.Core
 {
@@ -37,6 +38,30 @@ namespace OpenPhotos.Core
         public static string GetOpenPhotosFolderPath()
         {
             return config["openPhotosFolderPath"] ?? "G/OpenPhotos";
+        }
+
+        public static string GetRabbitHost()
+        {
+            return config["RABBIT_HOST"] ?? "localhost";
+        }
+
+        public static int GetRabbitPort()
+        {
+            var portString = config["RABBIT_PORT"] ?? "5672";
+            if (int.TryParse(portString, out var port))
+            {
+                return port;
+            }
+
+            throw new InvalidConfigurationException("RabbitPort specified in the configuration is invalid");
+        }
+        public static string GetRabbitUser()
+        {
+            return config["RABBIT_USER"] ?? "guest";
+        }
+        public static string GetRabbitPassword()
+        {
+            return config["RABBIT_PASSWORD"] ?? "guest";
         }
     }
 }

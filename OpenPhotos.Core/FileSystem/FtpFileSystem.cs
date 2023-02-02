@@ -1,4 +1,5 @@
 ﻿using Limilabs.FTP.Client;
+using OpenPhotos.Contracts;
 using OpenPhotos.Core.Interfaces;
 
 namespace OpenPhotos.Core.FileSystem
@@ -6,8 +7,9 @@ namespace OpenPhotos.Core.FileSystem
     public class FtpFileSystem : IFileSystem, IDisposable
     {
         private readonly Ftp ftpConnection;
+        private readonly IMessagePublisher messagePublisher;
 
-        public FtpFileSystem()
+        public FtpFileSystem(IMessagePublisher messagePublisher)
         {
             ftpConnection = new Ftp();
             ftpConnection.Connect("ftpupload.net", 21);
@@ -15,6 +17,7 @@ namespace OpenPhotos.Core.FileSystem
             var password = Configuration.GetFtpPassword();
             ftpConnection.Login(login, password);
             ftpConnection.ChangeFolder("OpenPhotos");
+            this.messagePublisher = messagePublisher;
         }
 
         public void Dispose()
@@ -34,9 +37,20 @@ namespace OpenPhotos.Core.FileSystem
             return file;
         }
 
+        /// <summary>
+        /// Sends a message to save a file. This doesn't save the file itself due to possible errors.
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="fileContent"></param>
         public void SaveFile(string fileName, byte[] fileContent)
         {
-            ftpConnection.Append(fileName, fileContent);
+            var pyload = new FileSaveRequest()
+            {
+                Content = fileContent,
+                Name = fileName
+            };
+
+            messagePublisher.PublishSaveFileMessage(pyload);
         }
 
         public List<string> GetAllFiles()

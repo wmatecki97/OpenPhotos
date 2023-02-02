@@ -1,4 +1,4 @@
-﻿namespace OpenPhotos.FileSystem
+﻿namespace OpenPhotos.Contracts
 {
     internal class FileSaveRequest
     {

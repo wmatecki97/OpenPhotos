@@ -1,12 +1,15 @@
 ﻿using Newtonsoft.Json;
+using OpenPhotos.Contracts;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
+using Constants = OpenPhotos.Contracts.Constants;
+
 namespace OpenPhotos.FileSystem
 {
     internal class Program
     {
-        private const string Queue = "fileSaveQueue";
+
         private static IModel channel;
 
         static void Main(string[] args)
@@ -24,10 +27,12 @@ namespace OpenPhotos.FileSystem
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += SaveFileRequestRecieved;
 
-            channel.QueueDeclare(Queue, true, false, false);
+            channel.QueueDeclare(Constants.SaveFileQueue, true, false, false);
+            channel.ExchangeDeclare(Constants.SaveFileExchange, "fanout", true, false);
+            channel.QueueBind(Constants.SaveFileQueue, Constants.SaveFileExchange, string.Empty, new Dictionary<string, object>());
+            channel.BasicConsume(Constants.SaveFileQueue, false, consumer);
 
-            channel.BasicConsume(Queue, false, consumer);
-
+            Console.WriteLine("Waiting for saveFile requests");
             Console.ReadKey();
         }
 

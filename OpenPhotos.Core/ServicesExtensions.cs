@@ -6,6 +6,7 @@ using OpenPhotos.Core.Database.Repositories;
 using OpenPhotos.Core.Interfaces;
 using OpenPhotos.Core.FileProcessing;
 using OpenPhotos.Core.FileSystem;
+using OpenPhotos.Core.Messaging;
 
 namespace OpenPhotos.Core
 {
@@ -23,6 +24,7 @@ namespace OpenPhotos.Core
             services.AddScoped<IPhotosRepository, PhotosRepository>();
             services.AddScoped<IFileMetadataReader, FileMetadataReader>();
             services.AddScoped<IFileSystem, FtpFileSystem>();
+            services.AddScoped<IMessagePublisher, RabbitPublisher>();
 
             return services;
         }
