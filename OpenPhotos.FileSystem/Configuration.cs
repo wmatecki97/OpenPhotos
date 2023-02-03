@@ -42,8 +42,9 @@ namespace OpenPhotos.FileSystem
                 return port;
             }
 
-            throw new InvalidConfigurationException("RabbitPort specified in the configuration is invalid");
+            throw new InvalidConfigurationException($"RabbitPort specified in the configuration is invalid. Received value is {portString}");
         }
+
         public static string GetRabbitUser()
         {
             return config["RABBIT_USER"] ?? "guest";
@@ -51,6 +52,18 @@ namespace OpenPhotos.FileSystem
         public static string GetRabbitPassword()
         {
             return config["RABBIT_PASSWORD"] ?? "guest";
+        }
+
+        public static int GetMaxThumbnailSizeInBytes()
+        {
+            const int kbToBRatio = 1000;
+            var sizeString = config["MAX_THUMBNAIL_SIZE_KB"] ?? "400";
+            if (int.TryParse(sizeString, out var size))
+            {
+                return size*kbToBRatio;
+            }
+
+            throw new InvalidConfigurationException($"Maximum thumbnail size in the configuration is not valid. Received value is {sizeString}");
         }
     }
 }

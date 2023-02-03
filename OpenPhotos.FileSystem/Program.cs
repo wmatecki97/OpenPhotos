@@ -1,18 +1,10 @@
-﻿using Newtonsoft.Json;
-using OpenPhotos.Contracts;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-using System.Text;
-using Constants = OpenPhotos.Contracts.Constants;
+﻿using RabbitMQ.Client;
 
 namespace OpenPhotos.FileSystem
 {
     internal class Program
     {
-
-        private static IModel channel;
-
-        static void Main(string[] args)
+        static void Main()
         {
             var factory = new ConnectionFactory();
             factory.HostName = Configuration.GetRabbitHost();
@@ -21,28 +13,14 @@ namespace OpenPhotos.FileSystem
             factory.UserName = Configuration.GetRabbitUser();
             factory.Password = Configuration.GetRabbitPassword();
 
-            var conn = factory.CreateConnection();
-            channel = conn.CreateModel();
+            var fullQualityFileSaver = new FullQualityFileSaver();
+            fullQualityFileSaver.Register(factory);
 
-            var consumer = new EventingBasicConsumer(channel);
-            consumer.Received += SaveFileRequestRecieved;
-
-            channel.QueueDeclare(Constants.SaveFileQueue, true, false, false);
-            channel.ExchangeDeclare(Constants.SaveFileExchange, "fanout", true, false);
-            channel.QueueBind(Constants.SaveFileQueue, Constants.SaveFileExchange, string.Empty, new Dictionary<string, object>());
-            channel.BasicConsume(Constants.SaveFileQueue, false, consumer);
+            var thumbnailFileSaver = new ThumbnailFileSaver();
+            thumbnailFileSaver.Register(factory);
 
             Console.WriteLine("Waiting for saveFile requests");
             Console.ReadKey();
-        }
-
-        private static void SaveFileRequestRecieved(object? sender, BasicDeliverEventArgs e)
-        {
-            using var fileSystem = new FtpFileSystemWriter();
-            string content = Encoding.UTF8.GetString(e.Body.ToArray());
-            var request = JsonConvert.DeserializeObject<FileSaveRequest>(content);
-            fileSystem.SaveFile(request.Name, request.Content);
-            channel.BasicAck(e.DeliveryTag, false);
         }
     }
 }
