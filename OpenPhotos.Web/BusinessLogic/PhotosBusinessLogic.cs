@@ -8,43 +8,43 @@ namespace OpenPhotos.Web.BusinessLogic;
 
 public class PhotosBusinessLogic : IPhotosBusinessLogic
 {
-    private readonly IFileMetadataReader fileMetadataReader;
-    private readonly IFileSystem fileSystem;
-    private readonly IPhotosRepository photosRepository;
+    private readonly IFileMetadataReader _fileMetadataReader;
+    private readonly IFileSystem _fileSystem;
+    private readonly IPhotosRepository _photosRepository;
 
     public PhotosBusinessLogic(
         IPhotosRepository photosRepository,
         IFileMetadataReader fileMetadataReader,
         IFileSystem fileSystem)
     {
-        this.photosRepository = photosRepository;
-        this.fileMetadataReader = fileMetadataReader;
-        this.fileSystem = fileSystem;
+        this._photosRepository = photosRepository;
+        this._fileMetadataReader = fileMetadataReader;
+        this._fileSystem = fileSystem;
     }
 
     public byte[] GetImageBytes(string imageName)
     {
-        var image = fileSystem.GetFile(imageName);
+        var image = _fileSystem.GetFile(imageName);
         return image;
     }
 
     public async Task<PhotoMetadata[]> GetMostCurrentPhotosAsync(int number)
     {
-        var photos = await photosRepository.GetTopLatestPhotos(number);
+        var photos = await _photosRepository.GetTopLatestPhotos(number);
         return photos;
     }
 
     public async Task UploadPhoto(PhotoUploadDto upload)
     {
-        var photoMetadata = fileMetadataReader.GetFileMetadata(upload.Metadata);
+        var photoMetadata = _fileMetadataReader.GetFileMetadata(upload.Metadata);
         photoMetadata.Name =
             $"{upload.CreatedDate.Year}-{upload.CreatedDate.Month}-{upload.CreatedDate.Day}-{upload.Name}";
 
         //todo tags
-        await photosRepository.Add(photoMetadata);
+        await _photosRepository.Add(photoMetadata);
 
-        fileSystem.SaveFile(photoMetadata.Name, upload.PhotoBytes);
+        _fileSystem.SaveFile(photoMetadata.Name, upload.PhotoBytes);
 
-        await photosRepository.SaveChangesAsync();
+        await _photosRepository.SaveChangesAsync();
     }
 }

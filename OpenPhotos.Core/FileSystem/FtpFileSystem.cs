@@ -6,29 +6,31 @@ namespace OpenPhotos.Core.FileSystem;
 
 public class FtpFileSystem : IFileSystem, IDisposable
 {
-    private readonly Ftp ftpConnection;
-    private readonly IMessagePublisher messagePublisher;
+    private readonly Ftp _ftpConnection;
+    private readonly IMessagePublisher _messagePublisher;
 
     public FtpFileSystem(IMessagePublisher messagePublisher)
     {
-        ftpConnection = new Ftp();
-        ftpConnection.Connect("ftpupload.net", 21);
+        _ftpConnection = new Ftp();
+        _ftpConnection.Connect("ftpupload.net", 21);
         var login = Configuration.GetFtpLogin();
         var password = Configuration.GetFtpPassword();
-        ftpConnection.Login(login, password);
-        ftpConnection.ChangeFolder("OpenPhotos");
-        this.messagePublisher = messagePublisher;
+        _ftpConnection.Login(login, password);
+        _ftpConnection.ChangeFolder("OpenPhotos");
+        this._messagePublisher = messagePublisher;
     }
 
     public void Dispose()
     {
-        ftpConnection.Dispose();
+        _ftpConnection.Dispose();
         GC.SuppressFinalize(this);
     }
 
-    public byte[] GetFile(string name)
+    public byte[] GetFile(string name, bool fullQuality = false)
     {
-        var file = ftpConnection.Download(name);
+        var folder = fullQuality ? Constants.FullQualityFolderName : Constants.ThumbnailsFolderName;
+        name = $"{folder}/{name}";
+        var file = _ftpConnection.Download(name);
         return file;
     }
 
@@ -45,18 +47,18 @@ public class FtpFileSystem : IFileSystem, IDisposable
             Name = fileName
         };
 
-        messagePublisher.PublishSaveFileMessage(pyload);
+        _messagePublisher.PublishSaveFileMessage(pyload);
     }
 
     public List<string> GetAllFiles()
     {
-        var list = ftpConnection.List();
+        var list = _ftpConnection.List();
         var fileNames = list.Select(f => f.Name).ToList();
         return fileNames;
     }
 
     ~FtpFileSystem()
     {
-        ftpConnection.Dispose();
+        _ftpConnection.Dispose();
     }
 }

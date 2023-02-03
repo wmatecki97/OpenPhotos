@@ -5,49 +5,49 @@ namespace OpenPhotos.Core;
 
 public static class Configuration
 {
-    private static readonly IConfigurationRoot config;
+    private static readonly IConfigurationRoot Config;
 
     static Configuration()
     {
         var builder = new ConfigurationBuilder()
             .AddEnvironmentVariables();
 
-        config = builder.Build();
+        Config = builder.Build();
     }
 
     public static string GetImaggaApiKey()
     {
-        return config["imaggaApiKey"];
+        return Config["imaggaApiKey"];
     }
 
     public static string GetImaggaApiSecret()
     {
-        return config["imaggaApiSecret"];
+        return Config["imaggaApiSecret"];
     }
 
     public static string GetFtpLogin()
     {
-        return config["ftpLogin"];
+        return Config["ftpLogin"];
     }
 
     public static string GetFtpPassword()
     {
-        return config["ftpPassword"];
+        return Config["ftpPassword"];
     }
 
     public static string GetOpenPhotosFolderPath()
     {
-        return config["openPhotosFolderPath"] ?? "G/OpenPhotos";
+        return Config["openPhotosFolderPath"] ?? "G/OpenPhotos";
     }
 
     public static string GetRabbitHost()
     {
-        return config["RABBIT_HOST"] ?? "localhost";
+        return Config["RABBIT_HOST"] ?? "localhost";
     }
 
     public static int GetRabbitPort()
     {
-        var portString = config["RABBIT_PORT"] ?? "5672";
+        var portString = Config["RABBIT_PORT"] ?? "5672";
         if (int.TryParse(portString, out var port)) return port;
 
         throw new InvalidConfigurationException("RabbitPort specified in the configuration is invalid");
@@ -55,11 +55,11 @@ public static class Configuration
 
     public static string GetRabbitUser()
     {
-        return config["RABBIT_USER"] ?? "guest";
+        return Config["RABBIT_USER"] ?? "guest";
     }
 
     public static string GetRabbitPassword()
     {
-        return config["RABBIT_PASSWORD"] ?? "guest";
+        return Config["RABBIT_PASSWORD"] ?? "guest";
     }
 }
