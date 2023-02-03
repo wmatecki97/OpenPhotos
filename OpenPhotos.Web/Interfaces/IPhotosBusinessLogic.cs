@@ -1,12 +1,11 @@
 ﻿using OpenPhotos.Core.Database.Entities;
 using OpenPhotos.Web.Dtos;
 
-namespace OpenPhotos.Web.Interfaces
+namespace OpenPhotos.Web.Interfaces;
+
+public interface IPhotosBusinessLogic
 {
-    public interface IPhotosBusinessLogic
-    {
-        byte[] GetImageBytes(string imageName);
-        Task<PhotoMetadata[]> GetMostCurrentPhotosAsync(int number);
-        Task UploadPhoto(PhotoUploadDto photoDto);
-    }
+    byte[] GetImageBytes(string imageName);
+    Task<PhotoMetadata[]> GetMostCurrentPhotosAsync(int number);
+    Task UploadPhoto(PhotoUploadDto photoDto);
 }

@@ -1,9 +1,8 @@
 ﻿using OpenPhotos.Contracts;
 
-namespace OpenPhotos.Core.Interfaces
+namespace OpenPhotos.Core.Interfaces;
+
+public interface IMessagePublisher
 {
-    public interface IMessagePublisher
-    {
-        void PublishSaveFileMessage(FileSaveRequest data);
-    }
+    void PublishSaveFileMessage(FileSaveRequest data);
 }

@@ -1,11 +1,8 @@
-﻿
-using OpenPhotos.Core.Database.Entities;
-using OpenPhotos.Core.FileProcessing;
+﻿using OpenPhotos.Core.Database.Entities;
 
-namespace OpenPhotos.Core.Interfaces
+namespace OpenPhotos.Core.Interfaces;
+
+public interface IFileMetadataReader
 {
-    public interface IFileMetadataReader
-    {
-        PhotoMetadata GetFileMetadata(Dictionary<string, string> metadata);
-    }
+    PhotoMetadata GetFileMetadata(Dictionary<string, string> metadata);
 }

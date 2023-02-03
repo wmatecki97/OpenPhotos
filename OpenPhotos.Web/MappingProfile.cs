@@ -2,13 +2,12 @@
 using OpenPhotos.Core.Database.Entities;
 using OpenPhotos.Web.Dtos;
 
-namespace OpenPhotos.Web
+namespace OpenPhotos.Web;
+
+public class MappingProfile : Profile
 {
-    public class MappingProfile : Profile
+    public MappingProfile()
     {
-        public MappingProfile()
-        {
-            CreateMap<PhotoMetadata, PhotoMetadataDto>();
-        }
+        CreateMap<PhotoMetadata, PhotoMetadataDto>();
     }
 }

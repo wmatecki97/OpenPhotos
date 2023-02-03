@@ -1,8 +1,7 @@
-﻿namespace OpenPhotos.Contracts
+﻿namespace OpenPhotos.Contracts;
+
+internal class FileSaveRequest
 {
-    internal class FileSaveRequest
-    {
-        public string Name { get; set; }
-        public byte[] Content { get; set; }
-    }
+    public string Name { get; set; }
+    public byte[] Content { get; set; }
 }

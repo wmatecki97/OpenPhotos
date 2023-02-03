@@ -1,9 +1,8 @@
-﻿namespace OpenPhotos.FileSystem
+﻿namespace OpenPhotos.FileSystem;
+
+public interface IFileSystem
 {
-    public interface IFileSystem
-    {
-        void Dispose();
-        List<string> GetAllFiles();
-        byte[] GetFile(string name);
-    }
+    void Dispose();
+    List<string> GetAllFiles();
+    byte[] GetFile(string name);
 }

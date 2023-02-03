@@ -1,32 +1,31 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using OpenPhotos.Core.Database;
-using Microsoft.EntityFrameworkCore;
-using OpenPhotos.Core.Interfaces.Repositories;
 using OpenPhotos.Core.Database.Repositories;
-using OpenPhotos.Core.Interfaces;
 using OpenPhotos.Core.FileProcessing;
 using OpenPhotos.Core.FileSystem;
+using OpenPhotos.Core.Interfaces;
+using OpenPhotos.Core.Interfaces.Repositories;
 using OpenPhotos.Core.Messaging;
 
-namespace OpenPhotos.Core
+namespace OpenPhotos.Core;
+
+public static class ServicesExtensions
 {
-    public static class ServicesExtensions
+    public static IServiceCollection AddOpenPhotosCoreServices(this IServiceCollection services)
     {
-        public static IServiceCollection AddOpenPhotosCoreServices(this IServiceCollection services)
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+        services.AddDbContext<IOpenPhotosDbContext, OpenPhotosDbContext>(options =>
         {
-            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+            options.UseNpgsql("User ID=admin;Password=admin;Host=localhost;Port=5432;Database=OpenPhotos;");
+        });
 
-            services.AddDbContext< IOpenPhotosDbContext, OpenPhotosDbContext>(options =>
-            {
-                options.UseNpgsql("User ID=admin;Password=admin;Host=localhost;Port=5432;Database=OpenPhotos;");
-            });
+        services.AddScoped<IPhotosRepository, PhotosRepository>();
+        services.AddScoped<IFileMetadataReader, FileMetadataReader>();
+        services.AddScoped<IFileSystem, FtpFileSystem>();
+        services.AddScoped<IMessagePublisher, RabbitPublisher>();
 
-            services.AddScoped<IPhotosRepository, PhotosRepository>();
-            services.AddScoped<IFileMetadataReader, FileMetadataReader>();
-            services.AddScoped<IFileSystem, FtpFileSystem>();
-            services.AddScoped<IMessagePublisher, RabbitPublisher>();
-
-            return services;
-        }
+        return services;
     }
 }
