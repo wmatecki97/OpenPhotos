@@ -17,6 +17,7 @@ public class Program
         builder.Services.AddOpenPhotosCoreServices();
         builder.Services.AddAutoMapper(typeof(MappingProfile));
         builder.Services.AddWebServices();
+
         builder.Services.AddCors(options =>
             options.AddDefaultPolicy(policy =>
                 policy
@@ -34,6 +35,8 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
+        app.UseCors();
 
         app.UseHttpsRedirection();
 

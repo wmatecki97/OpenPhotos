@@ -1,4 +1,5 @@
-﻿using OpenPhotos.Core.Database.Entities;
+﻿using OpenPhotos.Contracts;
+using OpenPhotos.Core.Database.Entities;
 using OpenPhotos.Core.Interfaces;
 using OpenPhotos.Core.Interfaces.Repositories;
 using OpenPhotos.Web.Dtos;
@@ -40,11 +41,83 @@ public class PhotosBusinessLogic : IPhotosBusinessLogic
         photoMetadata.Name =
             $"{upload.CreatedDate.Year}-{upload.CreatedDate.Month}-{upload.CreatedDate.Day}-{upload.Name}";
 
-        //todo tags
-        await _photosRepository.Add(photoMetadata);
-
         _fileSystem.SaveFile(photoMetadata.Name, upload.PhotoBytes);
 
+        await AddTagsAndSaveEntity(photoMetadata);
+    }
+
+    private async Task AddTagsAndSaveEntity(PhotoMetadata photoMetadata)
+    {
+        //todo tags
+        await _photosRepository.Add(photoMetadata);
         await _photosRepository.SaveChangesAsync();
+    }
+
+    public async Task RemoveInconsistencies(bool acceptPotentialDataLoss = false)
+    {
+        var dbEntriesTask = _photosRepository.GetAll();
+        var files = _fileSystem.GetAllFiles(Constants.FullQualityFolderName);
+        var thumbnails = _fileSystem.GetAllFiles(Constants.ThumbnailsFolderName);
+        var dbEntries = await dbEntriesTask;
+
+        var allImages = files.Union(thumbnails).ToList();
+        await RecoverMissingDbEntries(allImages, dbEntries);
+
+        RecoverThumbnailsFromImages(files, thumbnails);
+
+        if (acceptPotentialDataLoss)
+        {
+            SaveThumbnailsAsMissingFullQualityImages(thumbnails, files);
+            await RemoveDbEntitiesWithMissingImages(dbEntries, allImages);
+        }
+    }
+
+    public Task RegenerateAllThumbnails()
+    {
+        _fileSystem.DeleteAllThumbnails();
+        return RemoveInconsistencies();
+    }
+
+    private async Task RemoveDbEntitiesWithMissingImages(List<PhotoMetadata> dbEntries, List<string> allImages)
+    {
+        var missingImages = dbEntries.Where(d => !allImages.Any(i => i.StartsWith(d.Name))).ToArray();
+        foreach (var image in missingImages)
+        {
+            _photosRepository.RemoveByName(image);
+        }
+
+        await _photosRepository.SaveChangesAsync();
+    }
+
+    private void SaveThumbnailsAsMissingFullQualityImages(List<string> thumbnails, List<string> files)
+    {
+        var missingFullQualityImage = thumbnails.Where(f => !files.Contains(f)).ToArray();
+        foreach (var missingImage in missingFullQualityImage)
+        {
+            var image = _fileSystem.GetFile(missingImage);
+            _fileSystem.SaveFile(missingImage, image);
+            GC.Collect();
+        }
+    }
+
+    private void RecoverThumbnailsFromImages(List<string> files, List<string> thumbnails)
+    {
+        var missingThumbnails = files.Where(f => !thumbnails.Contains(f)).ToArray();
+        foreach (var missingThumbnail in missingThumbnails)
+        {
+            var image = _fileSystem.GetFile(missingThumbnail, true);
+            _fileSystem.SaveFile(missingThumbnail, image);
+            GC.Collect();
+        }
+    }
+
+    private async Task RecoverMissingDbEntries(List<string> allImages, List<PhotoMetadata> dbEntries)
+    {
+        var missingDbEntries = allImages.Where(f => !dbEntries.Any(d => f.StartsWith(d.Name))).ToArray();
+        var dbEntriesToAdd = missingDbEntries.Select(i => new PhotoMetadata { Name = i }).ToList();
+        foreach (var entity in dbEntriesToAdd)
+        {
+            await AddTagsAndSaveEntity(entity);
+        }
     }
 }

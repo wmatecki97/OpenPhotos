@@ -35,6 +35,20 @@ public class PhotosController : ControllerBase
         return File(imageBytes, $"image/{extension}");
     }
 
+    [HttpGet("RemoveInconsistencies")]
+    public async Task<IActionResult> RemoveInconsistencies()
+    {
+        await _photosLogic.RemoveInconsistencies();
+        return Ok();
+    }
+
+    [HttpGet("RegenerateAllThumbnails")]
+    public async Task<IActionResult> RegenerateAllThumbnails()
+    {
+        await _photosLogic.RegenerateAllThumbnails();
+        return Ok();
+    }
+
     [HttpPost]
     public async Task<IActionResult> AddPhoto([FromForm] IFormFile photo)
     {

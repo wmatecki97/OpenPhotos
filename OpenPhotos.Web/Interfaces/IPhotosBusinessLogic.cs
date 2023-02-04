@@ -8,4 +8,6 @@ public interface IPhotosBusinessLogic
     byte[] GetImageBytes(string imageName);
     Task<PhotoMetadata[]> GetMostCurrentPhotosAsync(int number);
     Task UploadPhoto(PhotoUploadDto photoDto);
+    Task RemoveInconsistencies(bool acceptPotentialDataLoss = false);
+    Task RegenerateAllThumbnails();
 }

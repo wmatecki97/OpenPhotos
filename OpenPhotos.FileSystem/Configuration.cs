@@ -57,7 +57,7 @@ public static class Configuration
     public static int GetMaxThumbnailSizeInBytes()
     {
         const int kbToBRatio = 1000;
-        var sizeString = Config["MAX_THUMBNAIL_SIZE_KB"] ?? "400";
+        var sizeString = Config["MAX_THUMBNAIL_SIZE_KB"] ?? "200";
         if (int.TryParse(sizeString, out var size)) return size * kbToBRatio;
 
         throw new InvalidConfigurationException(

@@ -10,4 +10,5 @@ public interface IPhotosRepository
     Task<PhotoMetadata[]> GetTopLatestPhotos(int number);
     Task Add(PhotoMetadata photo);
     Task SaveChangesAsync();
+    void RemoveByName(PhotoMetadata image);
 }

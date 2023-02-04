@@ -44,4 +44,9 @@ public class PhotosRepository : IPhotosRepository
     {
         await _context.SaveChangesAsync();
     }
+
+    public void RemoveByName(PhotoMetadata image)
+    {
+        _context.Photos.Remove(image);
+    }
 }

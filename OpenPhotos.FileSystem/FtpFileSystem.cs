@@ -14,8 +14,8 @@ public class FtpFileSystemWriter : IDisposable
         var login = Configuration.GetFtpLogin();
         var password = Configuration.GetFtpPassword();
         _ftpConnection.Login(login, password);
-        _ftpConnection.CreateFolder("OpenPhotos");
-        _ftpConnection.ChangeFolder("OpenPhotos");
+        _ftpConnection.CreateFolder(Constants.OpenPhotosFolderPath);
+        _ftpConnection.ChangeFolder(Constants.OpenPhotosFolderPath);
         _ftpConnection.CreateFolder(Constants.FullQualityFolderName);
         _ftpConnection.CreateFolder(Constants.ThumbnailsFolderName);
     }

@@ -7,4 +7,5 @@ public static class Constants
     public const string SaveFileExchange = "SaveFileExchange";
     public const string FullQualityFolderName = "FullQuality";
     public const string ThumbnailsFolderName = "Thumbnails";
+    public const string OpenPhotosFolderPath = "OpenPhotos";
 }

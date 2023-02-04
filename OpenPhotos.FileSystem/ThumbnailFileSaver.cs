@@ -22,6 +22,7 @@ internal class ThumbnailFileSaver
         var consumer = new EventingBasicConsumer(_channel);
         consumer.Received += SaveFileRequestRecieved;
 
+        _channel.BasicQos(0, 1, false);
         _channel.QueueDeclare(Constants.SaveThumbnailQueue, true, false, false);
         _channel.ExchangeDeclare(Constants.SaveFileExchange, "fanout", true);
         _channel.QueueBind(Constants.SaveThumbnailQueue, Constants.SaveFileExchange, string.Empty,
@@ -47,19 +48,26 @@ internal class ThumbnailFileSaver
     {
         var jpegQuality = 100;
         using var inputStream = new MemoryStream(fullSizeImage);
-        var image = Image.Load(inputStream, out var format);
         var encoder = new JpegEncoder { Quality = jpegQuality };
-        byte[] outputBytes;
+        byte[] outputBytes = Array.Empty<byte>();
         var maxThumbnailSize = Configuration.GetMaxThumbnailSizeInBytes();
-
-        do
+        try
         {
-            using var outputStream = new MemoryStream();
-            var width = (int)(image.Width * 0.9);
-            image.Mutate(x => x.Resize(width, 0));
-            image.Save(outputStream, encoder);
-            outputBytes = outputStream.ToArray();
-        } while (outputBytes.Length > maxThumbnailSize);
+            var image = Image.Load(inputStream);
+
+            do
+            {
+                using var outputStream = new MemoryStream();
+                var width = (int)(image.Width * 0.9);
+                image.Mutate(x => x.Resize(width, 0));
+                image.Save(outputStream, encoder);
+                outputBytes = outputStream.ToArray();
+            } while (outputBytes.Length > maxThumbnailSize);
+        }
+        catch (UnknownImageFormatException)
+        {
+            //it isn't an image, skip processing, save as is
+        }
 
         GC.Collect();
         return outputBytes;

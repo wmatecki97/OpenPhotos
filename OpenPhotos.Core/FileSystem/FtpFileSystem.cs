@@ -16,8 +16,16 @@ public class FtpFileSystem : IFileSystem, IDisposable
         var login = Configuration.GetFtpLogin();
         var password = Configuration.GetFtpPassword();
         _ftpConnection.Login(login, password);
-        _ftpConnection.ChangeFolder("OpenPhotos");
+        CreateFtpFoldersStructure();
+        _ftpConnection.ChangeFolder(Constants.OpenPhotosFolderPath);
         this._messagePublisher = messagePublisher;
+    }
+
+    private void CreateFtpFoldersStructure()
+    {
+        _ftpConnection.CreateFolder(Constants.OpenPhotosFolderPath);
+        _ftpConnection.CreateFolder(Constants.FullQualityFolderName);
+        _ftpConnection.CreateFolder(Constants.ThumbnailsFolderName);
     }
 
     public void Dispose()
@@ -50,11 +58,16 @@ public class FtpFileSystem : IFileSystem, IDisposable
         _messagePublisher.PublishSaveFileMessage(pyload);
     }
 
-    public List<string> GetAllFiles()
+    public List<string> GetAllFiles(string folderName = "./")
     {
-        var list = _ftpConnection.List();
+        var list = _ftpConnection.List(folderName);
         var fileNames = list.Select(f => f.Name).ToList();
         return fileNames;
+    }
+
+    public void DeleteAllThumbnails()
+    {
+        _ftpConnection.DeleteFolderRecursively(Constants.ThumbnailsFolderName);
     }
 
     ~FtpFileSystem()
