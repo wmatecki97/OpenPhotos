@@ -4,5 +4,5 @@ namespace OpenPhotos.Core.Interfaces;
 
 public interface IFileMetadataReader
 {
-    PhotoMetadata GetFileMetadata(Dictionary<string, string> metadata);
+    PhotoMetadata GetFileMetadata(byte[] imageData);
 }

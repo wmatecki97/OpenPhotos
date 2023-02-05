@@ -37,7 +37,7 @@ public class PhotosBusinessLogic : IPhotosBusinessLogic
 
     public async Task UploadPhoto(PhotoUploadDto upload)
     {
-        var photoMetadata = _fileMetadataReader.GetFileMetadata(upload.Metadata);
+        var photoMetadata = _fileMetadataReader.GetFileMetadata(upload.PhotoBytes);
         photoMetadata.Name =
             $"{upload.CreatedDate.Year}-{upload.CreatedDate.Month}-{upload.CreatedDate.Day}-{upload.Name}";
 
