@@ -49,7 +49,7 @@ internal class ThumbnailFileSaver
         var jpegQuality = 100;
         using var inputStream = new MemoryStream(fullSizeImage);
         var encoder = new JpegEncoder { Quality = jpegQuality };
-        byte[] outputBytes = Array.Empty<byte>();
+        var outputBytes = Array.Empty<byte>();
         var maxThumbnailSize = Configuration.GetMaxThumbnailSizeInBytes();
         try
         {

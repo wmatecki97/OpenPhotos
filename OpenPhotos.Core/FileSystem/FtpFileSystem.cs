@@ -18,14 +18,7 @@ public class FtpFileSystem : IFileSystem, IDisposable
         _ftpConnection.Login(login, password);
         CreateFtpFoldersStructure();
         _ftpConnection.ChangeFolder(Constants.OpenPhotosFolderPath);
-        this._messagePublisher = messagePublisher;
-    }
-
-    private void CreateFtpFoldersStructure()
-    {
-        _ftpConnection.CreateFolder(Constants.OpenPhotosFolderPath);
-        _ftpConnection.CreateFolder(Constants.FullQualityFolderName);
-        _ftpConnection.CreateFolder(Constants.ThumbnailsFolderName);
+        _messagePublisher = messagePublisher;
     }
 
     public void Dispose()
@@ -68,6 +61,13 @@ public class FtpFileSystem : IFileSystem, IDisposable
     public void DeleteAllThumbnails()
     {
         _ftpConnection.DeleteFolderRecursively(Constants.ThumbnailsFolderName);
+    }
+
+    private void CreateFtpFoldersStructure()
+    {
+        _ftpConnection.CreateFolder(Constants.OpenPhotosFolderPath);
+        _ftpConnection.CreateFolder(Constants.FullQualityFolderName);
+        _ftpConnection.CreateFolder(Constants.ThumbnailsFolderName);
     }
 
     ~FtpFileSystem()

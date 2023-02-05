@@ -18,9 +18,9 @@ public class PhotosBusinessLogic : IPhotosBusinessLogic
         IFileMetadataReader fileMetadataReader,
         IFileSystem fileSystem)
     {
-        this._photosRepository = photosRepository;
-        this._fileMetadataReader = fileMetadataReader;
-        this._fileSystem = fileSystem;
+        _photosRepository = photosRepository;
+        _fileMetadataReader = fileMetadataReader;
+        _fileSystem = fileSystem;
     }
 
     public byte[] GetImageBytes(string imageName)
@@ -44,13 +44,6 @@ public class PhotosBusinessLogic : IPhotosBusinessLogic
         _fileSystem.SaveFile(photoMetadata.Name, upload.PhotoBytes);
 
         await AddTagsAndSaveEntity(photoMetadata);
-    }
-
-    private async Task AddTagsAndSaveEntity(PhotoMetadata photoMetadata)
-    {
-        //todo tags
-        await _photosRepository.Add(photoMetadata);
-        await _photosRepository.SaveChangesAsync();
     }
 
     public async Task RemoveInconsistencies(bool acceptPotentialDataLoss = false)
@@ -78,13 +71,17 @@ public class PhotosBusinessLogic : IPhotosBusinessLogic
         return RemoveInconsistencies();
     }
 
+    private async Task AddTagsAndSaveEntity(PhotoMetadata photoMetadata)
+    {
+        //todo tags
+        await _photosRepository.Add(photoMetadata);
+        await _photosRepository.SaveChangesAsync();
+    }
+
     private async Task RemoveDbEntitiesWithMissingImages(List<PhotoMetadata> dbEntries, List<string> allImages)
     {
         var missingImages = dbEntries.Where(d => !allImages.Any(i => i.StartsWith(d.Name))).ToArray();
-        foreach (var image in missingImages)
-        {
-            _photosRepository.RemoveByName(image);
-        }
+        foreach (var image in missingImages) _photosRepository.RemoveByName(image);
 
         await _photosRepository.SaveChangesAsync();
     }
@@ -115,9 +112,6 @@ public class PhotosBusinessLogic : IPhotosBusinessLogic
     {
         var missingDbEntries = allImages.Where(f => !dbEntries.Any(d => f.StartsWith(d.Name))).ToArray();
         var dbEntriesToAdd = missingDbEntries.Select(i => new PhotoMetadata { Name = i }).ToList();
-        foreach (var entity in dbEntriesToAdd)
-        {
-            await AddTagsAndSaveEntity(entity);
-        }
+        foreach (var entity in dbEntriesToAdd) await AddTagsAndSaveEntity(entity);
     }
 }

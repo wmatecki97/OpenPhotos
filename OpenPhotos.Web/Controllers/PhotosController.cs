@@ -15,8 +15,8 @@ public class PhotosController : ControllerBase
 
     public PhotosController(IPhotosBusinessLogic photosLogic, IMapper mapper)
     {
-        this._photosLogic = photosLogic;
-        this._mapper = mapper;
+        _photosLogic = photosLogic;
+        _mapper = mapper;
     }
 
     [HttpGet]
