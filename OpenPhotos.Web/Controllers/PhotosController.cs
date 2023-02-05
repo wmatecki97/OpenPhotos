@@ -19,10 +19,18 @@ public class PhotosController : ControllerBase
         _mapper = mapper;
     }
 
-    [HttpGet]
+    [HttpGet()]
     public async Task<IActionResult> GetTop50Async()
     {
         var photos = await _photosLogic.GetMostCurrentPhotosAsync(50);
+        var dtos = _mapper.Map<PhotoMetadata[], PhotoMetadataDto[]>(photos);
+        return Ok(dtos);
+    }
+
+    [HttpGet("Search/{text}")]
+    public async Task<IActionResult> Search(string text)
+    {
+        var photos = await _photosLogic.GetTopPhotosByText(text, 50);
         var dtos = _mapper.Map<PhotoMetadata[], PhotoMetadataDto[]>(photos);
         return Ok(dtos);
     }

@@ -1,5 +1,7 @@
-﻿using OpenPhotos.Contracts;
+﻿using AutoMapper;
+using OpenPhotos.Contracts;
 using OpenPhotos.Core.Database.Entities;
+using OpenPhotos.Core.ImageTagging;
 using OpenPhotos.Core.Interfaces;
 using OpenPhotos.Core.Interfaces.Repositories;
 using OpenPhotos.Web.Dtos;
@@ -12,15 +14,19 @@ public class PhotosBusinessLogic : IPhotosBusinessLogic
     private readonly IFileMetadataReader _fileMetadataReader;
     private readonly IFileSystem _fileSystem;
     private readonly IPhotosRepository _photosRepository;
+    private readonly IImageTagsGenerator _tagsGenerator;
+    private readonly IMapper _mapper;
 
     public PhotosBusinessLogic(
         IPhotosRepository photosRepository,
         IFileMetadataReader fileMetadataReader,
-        IFileSystem fileSystem)
+        IFileSystem fileSystem, IImageTagsGenerator tagsGenerator, IMapper mapper)
     {
         _photosRepository = photosRepository;
         _fileMetadataReader = fileMetadataReader;
         _fileSystem = fileSystem;
+        _tagsGenerator = tagsGenerator;
+        _mapper = mapper;
     }
 
     public byte[] GetImageBytes(string imageName)
@@ -43,7 +49,7 @@ public class PhotosBusinessLogic : IPhotosBusinessLogic
 
         _fileSystem.SaveFile(photoMetadata.Name, upload.PhotoBytes);
 
-        await AddTagsAndSaveEntity(photoMetadata);
+        await AddTagsAndSaveEntity(photoMetadata, upload.PhotoBytes);
     }
 
     public async Task RemoveInconsistencies(bool acceptPotentialDataLoss = false)
@@ -71,10 +77,17 @@ public class PhotosBusinessLogic : IPhotosBusinessLogic
         return RemoveInconsistencies();
     }
 
-    private async Task AddTagsAndSaveEntity(PhotoMetadata photoMetadata)
+    public Task<PhotoMetadata[]> GetTopPhotosByText(string text, int i)
     {
-        //todo tags
-        await _photosRepository.Add(photoMetadata);
+        return _photosRepository.GetByTag(text);
+    }
+
+    private async Task AddTagsAndSaveEntity(PhotoMetadata photoMetadata, byte[] uploadPhotoBytes)
+    {
+        var tags = await _tagsGenerator.GetTagsForImage(uploadPhotoBytes, photoMetadata.Name);
+        photoMetadata.Tags = tags.Select(_mapper.Map<Tag>).ToList();
+
+        //await _photosRepository.Add(photoMetadata);
         await _photosRepository.SaveChangesAsync();
     }
 
@@ -112,6 +125,11 @@ public class PhotosBusinessLogic : IPhotosBusinessLogic
     {
         var missingDbEntries = allImages.Where(f => !dbEntries.Any(d => f.StartsWith(d.Name))).ToArray();
         var dbEntriesToAdd = missingDbEntries.Select(i => new PhotoMetadata { Name = i }).ToList();
-        foreach (var entity in dbEntriesToAdd) await AddTagsAndSaveEntity(entity);
+        foreach (var entity in dbEntriesToAdd)
+        {
+            var fileContent = _fileSystem.GetFile(entity.Name, true);
+            await AddTagsAndSaveEntity(entity, fileContent);
+        }
     }
+
 }

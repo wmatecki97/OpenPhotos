@@ -5,11 +5,10 @@ using RestSharp;
 
 namespace OpenPhotos.Core.ImageTagging;
 
-public class ImageTagsGenerator
+public class ImageTagsGenerator : IImageTagsGenerator
 {
-    public string[] GetTagsForImage(string imagePath)
+    public async Task<TagResult[]> GetTagsForImage(byte[] imageBytes, string fileName)
     {
-        var fileContent = File.ReadAllText(imagePath);
         var apiKey = Configuration.GetImaggaApiKey();
         var apiSecret = Configuration.GetImaggaApiSecret();
 
@@ -21,12 +20,15 @@ public class ImageTagsGenerator
         var request = new RestRequest();
         request.Method = Method.Post;
         request.AddHeader("Authorization", string.Format("Basic {0}", basicAuthValue));
-        request.AddFile("image", imagePath);
+        request.AddFile("image", imageBytes, fileName);
 
-        var response = client.Execute(request);
-        Console.WriteLine(response.Content);
+        var response = await client.ExecuteAsync(request);
         var result = JsonConvert.DeserializeObject<ImaggaTagResponseModel>(response.Content);
 
-        return result.Result.Tags.Select(t => t.TagValue).ToArray();
+        return result.Result.Tags.Select(t => new TagResult
+        {
+            Value = t.TagValue,
+            Confidence = t.Confidence,
+        }).ToArray();
     }
 }

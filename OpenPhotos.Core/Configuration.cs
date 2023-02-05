@@ -15,6 +15,11 @@ public static class Configuration
         Config = builder.Build();
     }
 
+    public static string GetConnectionString()
+    {
+        return Config["openPhotosConnectionString"] ?? "User ID=admin;Password=admin;Host=localhost;Port=5432;Database=OpenPhotos;";
+    }
+
     public static string GetImaggaApiKey()
     {
         return Config["imaggaApiKey"];

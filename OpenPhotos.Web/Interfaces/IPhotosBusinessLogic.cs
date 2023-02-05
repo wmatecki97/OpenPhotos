@@ -10,4 +10,5 @@ public interface IPhotosBusinessLogic
     Task UploadPhoto(PhotoUploadDto photoDto);
     Task RemoveInconsistencies(bool acceptPotentialDataLoss = false);
     Task RegenerateAllThumbnails();
+    Task<PhotoMetadata[]> GetTopPhotosByText(string text, int i);
 }

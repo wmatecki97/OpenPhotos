@@ -28,11 +28,11 @@ public class PhotosRepository : IPhotosRepository
         return await _context.Photos.FirstOrDefaultAsync(p => p.Name == name);
     }
 
-    public async Task<List<PhotoMetadata>> GetByTag(string tag)
+    public async Task<PhotoMetadata[]> GetByTag(string tag)
     {
         return await _context.Photos.Include(p => p.Tags)
-            .Where(p => p.Tags.Any(t => t.Value.Contains(tag, StringComparison.OrdinalIgnoreCase)))
-            .ToListAsync();
+            .Where(p => p.Tags.Any(t => t.Value.ToLower().Contains(tag.ToLower())))
+            .ToArrayAsync();
     }
 
     public async Task<PhotoMetadata[]> GetTopLatestPhotos(int number)

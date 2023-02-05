@@ -4,6 +4,7 @@ using OpenPhotos.Core.Database;
 using OpenPhotos.Core.Database.Repositories;
 using OpenPhotos.Core.FileProcessing;
 using OpenPhotos.Core.FileSystem;
+using OpenPhotos.Core.ImageTagging;
 using OpenPhotos.Core.Interfaces;
 using OpenPhotos.Core.Interfaces.Repositories;
 using OpenPhotos.Core.Messaging;
@@ -18,14 +19,14 @@ public static class ServicesExtensions
 
         services.AddDbContext<IOpenPhotosDbContext, OpenPhotosDbContext>(options =>
         {
-            options.UseNpgsql("User ID=admin;Password=admin;Host=localhost;Port=5432;Database=OpenPhotos;");
+            options.UseNpgsql(Configuration.GetConnectionString());
         });
 
         services.AddScoped<IPhotosRepository, PhotosRepository>();
         services.AddScoped<IFileMetadataReader, FileMetadataReader>();
         services.AddScoped<IFileSystem, FtpFileSystem>();
         services.AddScoped<IMessagePublisher, RabbitPublisher>();
-
+        services.AddScoped<IImageTagsGenerator, ImageTagsGenerator>();
         return services;
     }
 }
