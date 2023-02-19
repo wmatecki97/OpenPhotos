@@ -46,23 +46,30 @@ internal class ThumbnailFileSaver
 
     private byte[] GetImageThumbnail(byte[] fullSizeImage)
     {
-        var jpegQuality = 100;
-        using var inputStream = new MemoryStream(fullSizeImage);
-        var encoder = new JpegEncoder { Quality = jpegQuality };
+        const int resizedBiggerDimensionPixelCount = 380;
+        const int jpegQuality = 70;
+
+        using var inputStream = new MemoryStream(fullSizeImage);//todo configuration
+        var encoder = new JpegEncoder { Quality = jpegQuality };//todo configuration
+
         var outputBytes = Array.Empty<byte>();
-        var maxThumbnailSize = Configuration.GetMaxThumbnailSizeInBytes();
         try
         {
+            int height = 0, width = 0;
             var image = Image.Load(inputStream);
-
-            do
+            if (image.Height > image.Width)
             {
-                using var outputStream = new MemoryStream();
-                var width = (int)(image.Width * 0.9);
-                image.Mutate(x => x.Resize(width, 0));
-                image.Save(outputStream, encoder);
-                outputBytes = outputStream.ToArray();
-            } while (outputBytes.Length > maxThumbnailSize);
+                height = resizedBiggerDimensionPixelCount;
+            }
+            else
+            {
+                width = resizedBiggerDimensionPixelCount;
+            }
+
+            using var outputStream = new MemoryStream();
+            image.Mutate(x => x.Resize(width, height));
+            image.Save(outputStream, encoder);
+            outputBytes = outputStream.ToArray();
         }
         catch (UnknownImageFormatException)
         {

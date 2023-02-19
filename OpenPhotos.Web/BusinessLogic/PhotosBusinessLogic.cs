@@ -87,7 +87,7 @@ public class PhotosBusinessLogic : IPhotosBusinessLogic
         var tags = await _tagsGenerator.GetTagsForImage(uploadPhotoBytes, photoMetadata.Name);
         photoMetadata.Tags = tags.Select(_mapper.Map<Tag>).ToList();
 
-        //await _photosRepository.Add(photoMetadata);
+        await _photosRepository.Add(photoMetadata);
         await _photosRepository.SaveChangesAsync();
     }
 
